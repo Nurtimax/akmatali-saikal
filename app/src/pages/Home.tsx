@@ -460,7 +460,7 @@ export default function Home() {
               {['decor-1', 'decor-2', 'decor-3', 'decor-4'].map((n, i) => (
                 <motion.img
                   key={n}
-                  src={`./images/${n}.png`}
+                  src={`./images/${n}.webp`}
                   alt="Той декору"
                   loading="lazy"
                   className="aspect-square w-full rounded-lg object-cover md:aspect-[3/4]"
