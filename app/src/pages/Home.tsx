@@ -56,7 +56,7 @@ function useAutoScroll(enabled: boolean) {
       window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
 
     const step = () => {
-      if (!atBottom()) window.scrollBy({ top: 0.6, behavior: 'auto' })
+      if (!atBottom()) window.scrollBy({ top: 0.3, behavior: 'auto' })
       raf = requestAnimationFrame(step)
     }
     const start = () => {
