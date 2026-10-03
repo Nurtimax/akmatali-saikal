@@ -1,25 +1,25 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 /* ---------- Конфигурация ---------- */
-const WEDDING_DATE = new Date(2026, 9, 16, 17, 0, 0) // 16.10.2026, 17:00
-const TIME_TEXT = '17:00'
-const RESTAURANT = '«АЙКОЛ»'
-const RESTAURANT_SUB = 'рестораны'
+const WEDDING_DATE = new Date(2026, 9, 16, 17, 0, 0); // 16.10.2026, 17:00
+const TIME_TEXT = "17:00";
+const RESTAURANT = "«АЙКӨЛ»";
+const RESTAURANT_SUB = "рестораны";
 
-const DRESS_COLORS = ['#E6D3B3', '#C79A8B', '#4A342A', '#8C5A3C', '#B4603F']
+const DRESS_COLORS = ["#E6D3B3", "#C79A8B", "#4A342A", "#8C5A3C", "#B4603F"];
 
-const EASE = [0.22, 1, 0.36, 1] as const
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 /* ---------- Анимация варианттары ---------- */
 const heroParent: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.35, delayChildren: 0.25 } },
-}
+};
 const heroChild: Variants = {
   hidden: { opacity: 0, y: 34 },
   show: { opacity: 1, y: 0, transition: { duration: 1.1, ease: EASE } },
-}
+};
 
 /* ---------- Скроллда пайда болуучу блок ---------- */
 function Reveal({
@@ -27,9 +27,9 @@ function Reveal({
   delay = 0,
   className,
 }: {
-  children: React.ReactNode
-  delay?: number
-  className?: string
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
 }) {
   return (
     <motion.div
@@ -41,48 +41,56 @@ function Reveal({
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
 /* ---------- 3 секунд кыймыл болбосо — акырын авто-скролл ---------- */
 function useAutoScroll(enabled: boolean) {
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled) return;
 
-    let idleTimer: number | undefined
-    let raf: number | null = null
+    let idleTimer: number | undefined;
+    let raf: number | null = null;
 
     const atBottom = () =>
-      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight - 4;
 
     const step = () => {
-      if (!atBottom()) window.scrollBy({ top: 0.3, behavior: 'auto' })
-      raf = requestAnimationFrame(step)
-    }
+      if (!atBottom()) window.scrollBy({ top: 0.3, behavior: "auto" });
+      raf = requestAnimationFrame(step);
+    };
     const start = () => {
-      if (raf !== null || atBottom()) return
-      raf = requestAnimationFrame(step)
-    }
+      if (raf !== null || atBottom()) return;
+      raf = requestAnimationFrame(step);
+    };
     const stop = () => {
-      if (raf !== null) cancelAnimationFrame(raf)
-      raf = null
-    }
+      if (raf !== null) cancelAnimationFrame(raf);
+      raf = null;
+    };
     const onActivity = () => {
-      stop()
-      window.clearTimeout(idleTimer)
-      idleTimer = window.setTimeout(start, 3000)
-    }
+      stop();
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(start, 3000);
+    };
 
-    const events: (keyof WindowEventMap)[] = ['wheel', 'touchmove', 'pointerdown', 'keydown']
-    events.forEach((e) => window.addEventListener(e, onActivity, { passive: true }))
-    idleTimer = window.setTimeout(start, 3000)
+    const events: (keyof WindowEventMap)[] = [
+      "wheel",
+      "touchmove",
+      "pointerdown",
+      "keydown",
+    ];
+    events.forEach((e) =>
+      window.addEventListener(e, onActivity, { passive: true })
+    );
+    idleTimer = window.setTimeout(start, 3000);
 
     return () => {
-      stop()
-      window.clearTimeout(idleTimer)
-      events.forEach((e) => window.removeEventListener(e, onActivity))
-    }
-  }, [enabled])
+      stop();
+      window.clearTimeout(idleTimer);
+      events.forEach((e) => window.removeEventListener(e, onActivity));
+    };
+  }, [enabled]);
 }
 
 /* ---------- Декоративдик бөлгүч ---------- */
@@ -95,7 +103,7 @@ function Divider() {
         whileInView={{ scaleX: 1, opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.9, ease: EASE }}
-        style={{ transformOrigin: 'right' }}
+        style={{ transformOrigin: "right" }}
       />
       <svg width="46" height="14" viewBox="0 0 46 14" fill="none" aria-hidden>
         <path
@@ -111,22 +119,22 @@ function Divider() {
         whileInView={{ scaleX: 1, opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.9, ease: EASE }}
-        style={{ transformOrigin: 'left' }}
+        style={{ transformOrigin: "left" }}
       />
     </div>
-  )
+  );
 }
 
 /* ---------- Календарь: 2026-жыл, Октябрь ---------- */
 function OctoberCalendar() {
-  const weekDays = ['Дш', 'Шш', 'Шр', 'Бш', 'Жм', 'Иш', 'Жк']
+  const weekDays = ["Дш", "Шш", "Шр", "Бш", "Жм", "Иш", "Жк"];
   // 2026-жылдын 1-октябры — бешшемби (дүйшөмбүдөн санаганда индекси = 3)
-  const leadingBlanks = 3
-  const daysInMonth = 31
+  const leadingBlanks = 3;
+  const daysInMonth = 31;
   const cells: (number | null)[] = [
     ...Array<null>(leadingBlanks).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ]
+  ];
 
   return (
     <div>
@@ -140,18 +148,32 @@ function OctoberCalendar() {
           day === null ? (
             <div key={`b${i}`} />
           ) : day === 16 ? (
-            <div key={day} className="relative flex items-center justify-center">
+            <div
+              key={day}
+              className="relative flex items-center justify-center"
+            >
               <motion.span
                 className="absolute text-[#b4603f]"
                 animate={{ scale: [1, 1.14, 1] }}
-                transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.8,
+                  ease: "easeInOut",
+                }}
                 aria-hidden
               >
-                <svg width="46" height="42" viewBox="0 0 24 22" fill="currentColor">
+                <svg
+                  width="46"
+                  height="42"
+                  viewBox="0 0 24 22"
+                  fill="currentColor"
+                >
                   <path d="M12 21S1 14.5 1 8.3C1 4.4 4 1.5 7.6 1.5c2 0 3.7 1 4.4 2.6.7-1.6 2.4-2.6 4.4-2.6C20 1.5 23 4.4 23 8.3 23 14.5 12 21 12 21z" />
                 </svg>
               </motion.span>
-              <span className="relative z-10 font-semibold text-white">{day}</span>
+              <span className="relative z-10 font-semibold text-white">
+                {day}
+              </span>
             </div>
           ) : (
             <div key={day} className="text-[#4a3a30]">
@@ -161,37 +183,37 @@ function OctoberCalendar() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 /* ---------- Тойго чейин санак ---------- */
 function useCountdown(target: Date) {
   const calc = () => {
-    const diff = Math.max(0, target.getTime() - Date.now())
+    const diff = Math.max(0, target.getTime() - Date.now());
     return {
       days: Math.floor(diff / 86400000),
       hours: Math.floor((diff / 3600000) % 24),
       minutes: Math.floor((diff / 60000) % 60),
       seconds: Math.floor((diff / 1000) % 60),
-    }
-  }
-  const [t, setT] = useState(calc)
+    };
+  };
+  const [t, setT] = useState(calc);
   useEffect(() => {
-    const id = setInterval(() => setT(calc()), 1000)
-    return () => clearInterval(id)
+    const id = setInterval(() => setT(calc()), 1000);
+    return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return t
+  }, []);
+  return t;
 }
 
 function Countdown() {
-  const t = useCountdown(WEDDING_DATE)
+  const t = useCountdown(WEDDING_DATE);
   const items = [
-    { v: t.days, label: 'күн' },
-    { v: t.hours, label: 'саат' },
-    { v: t.minutes, label: 'мүнөт' },
-    { v: t.seconds, label: 'секунда' },
-  ]
+    { v: t.days, label: "күн" },
+    { v: t.hours, label: "саат" },
+    { v: t.minutes, label: "мүнөт" },
+    { v: t.seconds, label: "секунда" },
+  ];
   return (
     <motion.div
       className="mx-auto grid max-w-lg grid-cols-4 gap-3 md:gap-5"
@@ -207,51 +229,58 @@ function Countdown() {
           className="card-soft rounded-2xl px-2 py-4 text-center md:py-6"
         >
           <div className="font-serif-elegant text-3xl font-semibold text-[#4a342a] md:text-4xl">
-            {String(it.v).padStart(2, '0')}
+            {String(it.v).padStart(2, "0")}
           </div>
-          <div className="mt-1 text-xs uppercase tracking-widest text-[#8a7565]">{it.label}</div>
+          <div className="mt-1 text-xs uppercase tracking-widest text-[#8a7565]">
+            {it.label}
+          </div>
         </motion.div>
       ))}
     </motion.div>
-  )
+  );
 }
 
 /* ---------- Башкы баракча ---------- */
 export default function Home() {
-  const [opened, setOpened] = useState(false)
-  const [playing, setPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [opened, setOpened] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useAutoScroll(opened)
+  useAutoScroll(opened);
 
   const openInvitation = () => {
-    setOpened(true)
-    const a = audioRef.current
+    setOpened(true);
+    const a = audioRef.current;
     if (a) {
-      a.volume = 0.55
+      a.volume = 0.55;
       a.play()
         .then(() => setPlaying(true))
-        .catch(() => setPlaying(false))
+        .catch(() => setPlaying(false));
     }
-  }
+  };
 
   const toggleMusic = () => {
-    const a = audioRef.current
-    if (!a) return
+    const a = audioRef.current;
+    if (!a) return;
     if (playing) {
-      a.pause()
-      setPlaying(false)
+      a.pause();
+      setPlaying(false);
     } else {
       a.play()
         .then(() => setPlaying(true))
-        .catch(() => {})
+        .catch(() => {});
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-[#ece5db]">
       <div className="relative mx-auto min-h-screen w-full max-w-md overflow-hidden bg-[#f6f3ee] shadow-2xl md:max-w-2xl lg:max-w-3xl">
-        <audio ref={audioRef} src="./music/Alex%20Warren%20-%20Ordinary.mp3" loop preload="auto" />
+        <audio
+          ref={audioRef}
+          src="./music/Alex%20Warren%20-%20Ordinary.mp3"
+          loop
+          preload="auto"
+        />
 
         {/* Кириш перdesи */}
         <AnimatePresence>
@@ -279,7 +308,9 @@ export default function Home() {
                   className="font-script text-6xl leading-tight text-[#3a2f28] md:text-8xl"
                 >
                   Акматали
-                  <span className="my-1 block text-4xl text-[#b4603f] md:text-6xl">&</span>
+                  <span className="my-1 block text-4xl text-[#b4603f] md:text-6xl">
+                    &
+                  </span>
                   Сайкал
                 </motion.h1>
                 <motion.p
@@ -310,7 +341,7 @@ export default function Home() {
           className="fixed bottom-5 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a189] bg-white/85 shadow-lg backdrop-blur"
         >
           <svg
-            className={playing ? 'spin-slow' : ''}
+            className={playing ? "spin-slow" : ""}
             width="22"
             height="22"
             viewBox="0 0 24 24"
@@ -331,7 +362,7 @@ export default function Home() {
             className="relative"
             variants={heroParent}
             initial="hidden"
-            animate={opened ? 'show' : 'hidden'}
+            animate={opened ? "show" : "hidden"}
           >
             <motion.h1
               variants={heroChild}
@@ -361,10 +392,23 @@ export default function Home() {
           <motion.div
             className="absolute bottom-8 text-[#8a7565]"
             animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
+            transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
           >
-            <svg width="20" height="30" viewBox="0 0 20 30" fill="none" stroke="currentColor">
-              <rect x="1" y="1" width="18" height="28" rx="9" strokeWidth="1.2" />
+            <svg
+              width="20"
+              height="30"
+              viewBox="0 0 20 30"
+              fill="none"
+              stroke="currentColor"
+            >
+              <rect
+                x="1"
+                y="1"
+                width="18"
+                height="28"
+                rx="9"
+                strokeWidth="1.2"
+              />
               <circle cx="10" cy="9" r="2" fill="currentColor" />
             </svg>
           </motion.div>
@@ -380,8 +424,9 @@ export default function Home() {
               Урматтуу коноктор!
             </h2>
             <p className="mx-auto mt-8 max-w-xl text-lg font-medium uppercase leading-relaxed tracking-wider text-[#4a3a30] md:text-xl">
-              Сиздерди сүйүнүү жана толкундануу менен, көптөн күткөн, жашообуздагы эң баалуу,
-              бактылуу күнүбүздү тең бөлүшүп, орток болууга чакырабыз!
+              Сиздерди сүйүнүү жана толкундануу менен, көптөн күткөн,
+              жашообуздагы эң баалуу, бактылуу күнүбүздү тең бөлүшүп, орток
+              болууга чакырабыз!
             </p>
           </Reveal>
           <Divider />
@@ -402,7 +447,12 @@ export default function Home() {
                 <div className="ornament-line mx-auto mt-2 w-24" />
               </div>
               <span className="text-[#b4603f]">
-                <svg width="14" height="13" viewBox="0 0 24 22" fill="currentColor">
+                <svg
+                  width="14"
+                  height="13"
+                  viewBox="0 0 24 22"
+                  fill="currentColor"
+                >
                   <path d="M12 21S1 14.5 1 8.3C1 4.4 4 1.5 7.6 1.5c2 0 3.7 1 4.4 2.6.7-1.6 2.4-2.6 4.4-2.6C20 1.5 23 4.4 23 8.3 23 14.5 12 21 12 21z" />
                 </svg>
               </span>
@@ -414,7 +464,9 @@ export default function Home() {
               </div>
             </div>
             <div className="mt-10 text-center">
-              <div className="font-script text-4xl text-[#5a4034] md:text-5xl">Дареги:</div>
+              <div className="font-script text-4xl text-[#5a4034] md:text-5xl">
+                Дареги:
+              </div>
               <div className="mt-4 text-3xl font-bold tracking-wide text-[#3a2f28] md:text-4xl">
                 {RESTAURANT}
               </div>
@@ -436,28 +488,39 @@ export default function Home() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
-              variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+              variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.1 } },
+              }}
             >
               {DRESS_COLORS.map((c) => (
                 <motion.span
                   key={c}
                   variants={{
                     hidden: { opacity: 0, scale: 0 },
-                    show: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 200, damping: 15 } },
+                    show: {
+                      opacity: 1,
+                      scale: 1,
+                      transition: {
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 15,
+                      },
+                    },
                   }}
                   whileHover={{ scale: 1.18 }}
                   className="h-10 w-10 shadow-inner md:h-12 md:w-12"
                   style={{
                     backgroundColor: c,
-                    borderRadius: '46% 54% 52% 48% / 56% 48% 52% 44%',
-                    boxShadow: 'inset 0 -3px 6px rgba(0,0,0,0.15)',
+                    borderRadius: "46% 54% 52% 48% / 56% 48% 52% 44%",
+                    boxShadow: "inset 0 -3px 6px rgba(0,0,0,0.15)",
                   }}
                 />
               ))}
             </motion.div>
             <Divider />
             <div className="grid grid-cols-2 gap-2 overflow-hidden rounded-2xl md:grid-cols-4 md:gap-3">
-              {['decor-1', 'decor-2', 'decor-3', 'decor-4'].map((n, i) => (
+              {["decor-1", "decor-2", "decor-3", "decor-4"].map((n, i) => (
                 <motion.img
                   key={n}
                   src={`./images/${n}.webp`}
@@ -479,7 +542,9 @@ export default function Home() {
         {/* 5 — Санак */}
         <section className="px-6 pb-20 text-center md:px-10 md:pb-28">
           <Reveal>
-            <h3 className="font-script mb-8 text-5xl text-[#5a4034] md:text-6xl">Тойго чейин:</h3>
+            <h3 className="font-script mb-8 text-5xl text-[#5a4034] md:text-6xl">
+              Тойго чейин:
+            </h3>
             <Countdown />
           </Reveal>
         </section>
@@ -494,13 +559,15 @@ export default function Home() {
               той ээлери:
             </p>
             <div className="font-script mt-8 text-6xl leading-tight text-[#3a2f28] md:text-8xl">
-              Акматали
-              <span className="my-1 block text-4xl text-[#b4603f] md:text-6xl">&</span>
-              Сайкал
+              Жусупбек
+              <span className="my-1 block text-4xl text-[#b4603f] md:text-6xl">
+                &
+              </span>
+              Айтаза
             </div>
           </Reveal>
         </section>
       </div>
     </div>
-  )
+  );
 }
